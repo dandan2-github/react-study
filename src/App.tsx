@@ -1,68 +1,48 @@
-import React, { useState } from 'react';
-import './App.css';
+import React, { useEffect, useState } from 'react'
+import './App.css'
+import UserCard from './components/UserCard'
 
-interface Todo {
-  id: number;
-  text: string;
-  completed: boolean;
+interface User {
+  id: number
+  name: string
+  email: string
+  phone: string
 }
 
 function App() {
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [newTodo, setNewTodo] = useState('');
+  const [users, setUsers] = useState<User[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const addTodo = () => {
-    if (newTodo.trim() === '') return;
-    const newTask: Todo = {
-      id: Date.now(),
-      text: newTodo,
-      completed: false,
-    };
-    setTodos([...todos, newTask]);
-    setNewTodo('');
-  };
+  useEffect(() => {
+    fetch('https://jsonplaceholder.typicode.com/users')
+      .then(res => {
+        if (!res.ok) throw new Error('네트워크 응답에 문제가 있습니다.')
+        return res.json()
+      })
+      .then(data => {
+        setUsers(data)
+        setLoading(false)
+      })
+      .catch(err => {
+        setError(err.message)
+        setLoading(false)
+      })
+  }, [])
 
-  const toggleTodo = (id: number) => {
-    setTodos(todos.map(todo =>
-      todo.id === id ? { ...todo, completed: !todo.completed } : todo
-    ));
-  };
-
-  const deleteTodo = (id: number) => {
-    setTodos(todos.filter(todo => todo.id !== id));
-  };
+  if (loading) return <p>불러오는 중...</p>
+  if (error) return <p>에러 발생: {error}</p>
 
   return (
     <div className="App">
-      <h1>To Do List</h1>
-      <div>
-        <input
-          type="text"
-          value={newTodo}
-          onChange={e => setNewTodo(e.target.value)}
-          placeholder="할 일을 입력하세요"
-        />
-        <button onClick={addTodo}>추가</button>
-      </div>
-      <ul>
-        {todos.map(todo => (
-          <li key={todo.id}>
-            <span
-              style={{
-                textDecoration: todo.completed ? 'line-through' : 'none',
-                marginRight: '10px',
-              }}
-              onClick={() => toggleTodo(todo.id)}
-            >
-              {todo.text}
-            </span>
-            <button onClick={() => deleteTodo(todo.id)}>삭제</button>
-          </li>
+      <h1>사용자 목록</h1>
+      <div className="user-list">
+        {users.map(user => (
+          <UserCard key={user.id} user={user} />
         ))}
-      </ul>
+      </div>
     </div>
-  );
+  )
 }
 
-export default App;
-
+export default App
