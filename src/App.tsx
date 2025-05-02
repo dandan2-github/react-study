@@ -1,18 +1,48 @@
-import React from 'react';
-import './App.css';
-import ProfileCard from './components/ProfileCard';
-import rilakkumaImg from './assets/rirak.jpg'; 
+import React, { useEffect, useState } from 'react'
+import './App.css'
+import UserCard from './components/UserCard'
 
-function App() {
-  return (
-    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '40px' }}>
-      <ProfileCard
-        name="다니"
-        image={rilakkumaImg}
-        bio="안녕하세요! 저는 강릉원주대 다니고 있는 25살 김다인이라고 합니다."
-      />
-    </div>
-  );
+interface User {
+  id: number
+  name: string
+  email: string
+  phone: string
 }
 
-export default App;
+function App() {
+  const [users, setUsers] = useState<User[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetch('https://jsonplaceholder.typicode.com/users')
+      .then(res => {
+        if (!res.ok) throw new Error('네트워크 응답에 문제가 있습니다.')
+        return res.json()
+      })
+      .then(data => {
+        setUsers(data)
+        setLoading(false)
+      })
+      .catch(err => {
+        setError(err.message)
+        setLoading(false)
+      })
+  }, [])
+
+  if (loading) return <p>불러오는 중...</p>
+  if (error) return <p>에러 발생: {error}</p>
+
+  return (
+    <div className="App">
+      <h1>사용자 목록</h1>
+      <div className="user-list">
+        {users.map(user => (
+          <UserCard key={user.id} user={user} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export default App
