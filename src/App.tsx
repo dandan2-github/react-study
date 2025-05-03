@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import NewList from './pages/PostList';
 import PostDetail from './pages/PostDetail';
