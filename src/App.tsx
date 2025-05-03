@@ -1,18 +1,24 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import NewList from './pages/PostList';
+import PostDetail from './pages/PostDetail';
+import PostForm from './pages/PostForm';
 import './App.css';
-import ProfileCard from './components/ProfileCard';
-import rilakkumaImg from './assets/rirak.jpg'; 
 
 function App() {
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', marginTop: '40px' }}>
-      <ProfileCard
-        name="다니"
-        image={rilakkumaImg}
-        bio="안녕하세요! 저는 강릉원주대 다니고 있는 25살 김다인이라고 합니다."
-      />
-    </div>
+    <Router>
+      <div className="App">
+        <h1>다니의 블로그</h1>
+        <Routes>
+          <Route path="/" element={<NewList />} />
+          <Route path="/posts/:id" element={<PostDetail />} />
+          <Route path="/new" element={<PostForm />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
 export default App;
+
